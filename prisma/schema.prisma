@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -9,38 +8,38 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Auth and User Management Models
 model User {
-  id            String    @id
+  id            String    @id @default(cuid())
   name          String
-  email         String
-  emailVerified Boolean
+  email         String    @unique
+  emailVerified Boolean   @default(false)
   image         String?
-  createdAt     DateTime
-  updatedAt     DateTime
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
+  schedules     Schedule[]
 
-  @@unique([email])
   @@map("user")
 }
 
 model Session {
-  id        String   @id
+  id        String   @id @default(cuid())
   expiresAt DateTime
-  token     String
-  createdAt DateTime
-  updatedAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   ipAddress String?
   userAgent String?
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([token])
   @@map("session")
 }
 
 model Account {
-  id                    String    @id
+  id                    String    @id @default(cuid())
   accountId             String
   providerId            String
   userId                String
@@ -52,19 +51,186 @@ model Account {
   refreshTokenExpiresAt DateTime?
   scope                 String?
   password              String?
-  createdAt             DateTime
-  updatedAt             DateTime
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 
+  @@unique([accountId, providerId])
   @@map("account")
 }
 
 model Verification {
-  id         String    @id
+  id         String    @id @default(cuid())
   identifier String
   value      String
   expiresAt  DateTime
-  createdAt  DateTime?
-  updatedAt  DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
+  @@unique([identifier, value])
   @@map("verification")
+}
+
+// Base Models
+model Schedule {
+  id                String     @id @default(cuid())
+  userId            String
+  weekday           Weekday
+  hourStart         DateTime
+  hourEnd           DateTime
+  validityStartTime DateTime
+  validityEndTime   DateTime
+  courseType        CourseType @default(LECTURE)
+  recurrence        Boolean    @default(true)
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subjects Subject[]
+
+  @@map("schedule")
+}
+
+model Subject {
+  id         String   @id @default(cuid())
+  scheduleId String?
+  name       String
+  code       String   @unique
+  color      String   @default("#3498db")
+  teacher    String?
+  room       String?
+  semester   Semester @default(S1)
+  schoolYear String   @default("2025-2026")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  assignments Assignment[]
+  notes       SubjectNote[]
+  evenements  Evenement[]
+  schedule    Schedule?    @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+
+  @@map("subject")
+}
+
+model Assignment {
+  id             String         @id @default(cuid())
+  subjectId      String
+  description    String
+  assignmentType AssignmentType @default(HOMEWORK)
+  dueDate        DateTime
+  limitDate      DateTime
+  status         Status         @default(TO_DO)
+  priority       Priority       @default(MEDIUM)
+  files          String[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  subject Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@map("assignment")
+}
+
+model SubjectNote {
+  id          String   @id @default(cuid())
+  subjectId   String
+  title       String
+  content     String
+  chapter     String?
+  subjectDate DateTime
+  noteType    NoteType @default(COURSE)
+  files       String[]
+  tags        String[]
+  favorite    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  subject Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@map("subject_note")
+}
+
+model Evenement {
+  id          String    @id @default(cuid())
+  title       String
+  subjectId   String?
+  description String?
+  startDate   DateTime
+  endDate     DateTime?
+  eventType   EventType @default(LECTURE)
+  location    String?
+  color       String    @default("#129aa5")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  subject     Subject?  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  @@map("evenement")
+}
+
+// Enums
+enum Weekday {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+enum Semester {
+  S1
+  S2
+  S3
+  S4
+  S5
+  S6
+  S7
+  S8
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum Status {
+  TO_DO
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum NoteType {
+  COURSE
+  TD
+  TP
+  RESUME
+  OTHER
+}
+
+enum EventType {
+  LECTURE
+  TUTORIAL
+  EXAM
+  MEETING
+  OTHER
+}
+
+enum CourseType {
+  LECTURE
+  EXAM
+  TP
+  TD
+  OTHER
+}
+
+enum AssignmentType {
+  HOMEWORK
+  PROJECT
+  EXAM
+  PRESENTATION
+  TP
+  OTHER
 }
