@@ -23,7 +23,7 @@ export const signInWithProvider = async (provider: Provider) => {
 
     return {
       success: true,
-      message: "Successfully signed in",
+      message: `Successfully signed in with ${provider}`,
     };
   } catch (error) {
     const e = error as Error;
