@@ -7,7 +7,14 @@ export const { signIn, signUp, useSession } = createAuthClient();
 
 export type Provider = "google" | "github";
 
-export const signInWithProvider = async (provider: Provider) => {
+export type SignInResponse = {
+  success: boolean;
+  message: string;
+};
+
+export const signInWithProvider = async (
+  provider: Provider
+): Promise<SignInResponse> => {
   try {
     const data = await authClient.signIn.social({
       provider,
@@ -17,7 +24,9 @@ export const signInWithProvider = async (provider: Provider) => {
     if (data.error) {
       return {
         success: false,
-        message: data.error.message,
+        message:
+          data.error.message ||
+          `An error occurred during sign-in with the provider ${provider}`,
       };
     }
 
@@ -27,9 +36,10 @@ export const signInWithProvider = async (provider: Provider) => {
     };
   } catch (error) {
     const e = error as Error;
+
     return {
       success: false,
-      message: { error: e.message || "An error occurred during sign-in" },
+      message: e.message || "An error occurred during sign-in",
     };
   }
 };
