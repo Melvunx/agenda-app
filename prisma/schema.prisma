@@ -74,11 +74,10 @@ model Verification {
 model Schedule {
   id                String     @id @default(cuid())
   userId            String
+  title             String
   weekday           Weekday
-  hourStart         DateTime
-  hourEnd           DateTime
-  validityStartTime DateTime
-  validityEndTime   DateTime
+  minHour           Int
+  maxEnd            Int
   courseType        CourseType @default(LECTURE)
   recurrence        Boolean    @default(true)
   createdAt         DateTime   @default(now())
@@ -86,7 +85,9 @@ model Schedule {
 
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   subjects Subject[]
-
+  assignments Assignment[]
+  evenements  Evenement[]
+  
   @@map("schedule")
 }
 
@@ -94,6 +95,9 @@ model Subject {
   id         String   @id @default(cuid())
   scheduleId String?
   name       String
+  description String?
+  hourStart  Int?
+  hourEnd    Int?
   code       String   @unique
   color      String   @default("#3498db")
   teacher    String?
@@ -104,8 +108,7 @@ model Subject {
   updatedAt  DateTime @updatedAt
 
   assignments Assignment[]
-  notes       SubjectNote[]
-  evenements  Evenement[]
+  notes       SubjectNote[]  
   schedule    Schedule?    @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
 
   @@map("subject")
@@ -114,7 +117,10 @@ model Subject {
 model Assignment {
   id             String         @id @default(cuid())
   subjectId      String
+  scheduleId     String?
   description    String
+  hourStart  Int?
+  hourEnd    Int?
   assignmentType AssignmentType @default(HOMEWORK)
   dueDate        DateTime
   limitDate      DateTime
@@ -125,6 +131,7 @@ model Assignment {
   updatedAt      DateTime       @updatedAt
 
   subject Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  schedule Schedule? @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
 
   @@map("assignment")
 }
@@ -151,17 +158,17 @@ model SubjectNote {
 model Evenement {
   id          String    @id @default(cuid())
   title       String
-  subjectId   String?
+  scheduleId String?
   description String?
-  startDate   DateTime
-  endDate     DateTime?
+  hourStart  Int?
+  hourEnd    Int?
   eventType   EventType @default(LECTURE)
   location    String?
   color       String    @default("#129aa5")
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  subject     Subject?  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  schedule Schedule? @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
   @@map("evenement")
 }
 
