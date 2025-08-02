@@ -7,6 +7,7 @@ import {
 } from "@/src/lib/auth-client";
 import { useRouter } from "next/router";
 import { FC } from "react";
+import { toast } from "sonner";
 import { Button } from "../ui/button";
 import {
   Card,
@@ -25,16 +26,28 @@ const ProviderButton: FC<ProviderButtonProps> = ({
   provider,
   signInWithProvider,
 }) => {
+  const router = useRouter();
+
   return (
-    <Button type="button" onClick={() => signInWithProvider(provider)}>
+    <Button
+      type="button"
+      onClick={async () => {
+        const signin = await signInWithProvider(provider);
+
+        if (signin.success) {
+          router.push("/dashboard");
+          toast.success(signin.message);
+        } else {
+          toast.error(signin.message);
+        }
+      }}
+    >
       {provider}
     </Button>
   );
 };
 
 export function FormSignin() {
-  const router = useRouter();
-
   const providers: Provider[] = ["google", "github"];
 
   return (
