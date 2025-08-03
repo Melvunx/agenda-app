@@ -25,3 +25,10 @@ export const createScheduleSchema = z.object({
   assignmentIds: z.array(z.string()).optional(),
   eventIds: z.array(z.string()).optional(),
 });
+
+export const updateScheduleSchema = createScheduleSchema.extend({
+  id: z.string().min(1, "L'ID du créneau est requis"),
+});
+
+export type CreateSchedule = z.infer<typeof createScheduleSchema>;
+export type UpdateSchedule = z.infer<typeof updateScheduleSchema>;

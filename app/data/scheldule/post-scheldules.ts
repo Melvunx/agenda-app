@@ -1,9 +1,11 @@
+"use server";
+
 import prisma from "@/src/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { requireUser } from "../user/require-user";
-import { createScheduleSchema, UpdateSchedule } from "./schema/schedule";
+import { CreateSchedule, createScheduleSchema } from "./schema/schedule";
 
-export async function updateSchedule(data: UpdateSchedule) {
+export async function createScheldule(data: CreateSchedule) {
   await requireUser();
 
   const schedule = createScheduleSchema.safeParse(data);
@@ -12,12 +14,11 @@ export async function updateSchedule(data: UpdateSchedule) {
     return {
       success: false,
       error: schedule.error.message,
-      message: "Erreur lors de la mise à jour du créneau",
+      message: "Erreur lors de la création du créneau",
     };
   }
 
-  await prisma.schedule.update({
-    where: { id: data.id },
+  await prisma.schedule.create({
     data: {
       ...schedule.data,
     },
@@ -28,6 +29,6 @@ export async function updateSchedule(data: UpdateSchedule) {
   return {
     success: true,
     error: null,
-    message: "Créneau mis à jour avec succès",
+    message: "Nouveau créneau créé avec succès",
   };
 }

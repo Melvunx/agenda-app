@@ -6,7 +6,6 @@ import { auth } from "../lib/auth";
 export type SessionResponse = {
   authenticated: boolean;
   user: Record<string, unknown> | null;
-  sessionId: string | null;
   message: string;
 };
 
@@ -20,7 +19,6 @@ export async function getUserSession(): Promise<SessionResponse> {
       return {
         authenticated: true,
         user: session.user,
-        sessionId: session.session.id,
         message: "User authenticated successfully",
       };
     }
@@ -29,7 +27,6 @@ export async function getUserSession(): Promise<SessionResponse> {
     return {
       authenticated: false,
       user: null,
-      sessionId: null,
       message: "No active session found",
     };
   } catch (error) {
@@ -38,16 +35,15 @@ export async function getUserSession(): Promise<SessionResponse> {
     return {
       authenticated: false,
       user: null,
-      sessionId: null,
       message: e.message || "An error occurred while fetching the session",
     };
   }
 }
 
-export async function isAuthenticated(): Promise<boolean> {
-  const session = await getUserSession();
-  return session.authenticated;
-}
+// export async function isAuthenticated(): Promise<boolean> {
+//   const session = await getUserSession();
+//   return session.authenticated;
+// }
 
 export async function getCurrentUser() {
   const session = await getUserSession();
