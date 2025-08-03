@@ -12,4 +12,10 @@ export const validateString = z.string().min(1, {
 
 export const validateArrayString = z.array(validateString).min(1, {
   message: "At least one item is required",
-}); 
+});
+
+export type DataRespoonse = {
+  success: boolean;
+  error: string | null;
+  message: string;
+};

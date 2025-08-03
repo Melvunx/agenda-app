@@ -1,11 +1,17 @@
 "use server";
 
 import prisma from "@/src/lib/prisma";
-import { validateArrayString, validateString } from "@/src/lib/utils";
+import {
+  DataRespoonse,
+  validateArrayString,
+  validateString,
+} from "@/src/lib/utils";
 import { revalidatePath } from "next/cache";
 import { requireUser } from "../user/require-user";
 
-export async function deleteSchedules(scheduleIds: string[]) {
+export async function deleteSchedules(
+  scheduleIds: string[]
+): Promise<DataRespoonse> {
   await requireUser();
 
   const ids = validateArrayString.safeParse(scheduleIds);
@@ -43,7 +49,9 @@ export async function deleteSchedules(scheduleIds: string[]) {
   };
 }
 
-export async function deleteSchedule(scheduleId: string) {
+export async function deleteSchedule(
+  scheduleId: string
+): Promise<DataRespoonse> {
   await requireUser();
 
   const id = validateString.safeParse(scheduleId);

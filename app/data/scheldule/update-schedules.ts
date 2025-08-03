@@ -1,9 +1,12 @@
 import prisma from "@/src/lib/prisma";
+import { DataRespoonse } from "@/src/lib/utils";
 import { revalidatePath } from "next/cache";
 import { requireUser } from "../user/require-user";
 import { createScheduleSchema, UpdateSchedule } from "./schema/schedule";
 
-export async function updateSchedule(data: UpdateSchedule) {
+export async function updateSchedule(
+  data: UpdateSchedule
+): Promise<DataRespoonse> {
   await requireUser();
 
   const schedule = createScheduleSchema.safeParse(data);
