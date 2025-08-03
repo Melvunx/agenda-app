@@ -34,3 +34,10 @@ export const createAssignmentSchema = z.object({
   subjectId: z.string().min(1, "Le cours est requis"),
   scheduleId: z.string().nullable(),
 });
+
+export const updateAssignmentSchema = createAssignmentSchema.extend({
+  id: z.string().min(1, "L'ID du devoir est requis"),
+});
+
+export type CreateAssignment = z.infer<typeof createAssignmentSchema>;
+export type UpdateAssignment = z.infer<typeof updateAssignmentSchema>;

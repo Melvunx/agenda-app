@@ -12,7 +12,7 @@ export const createNoteSchema = z.object({
     error: "Le type de note est requis",
   }),
   files: z.array(z.string()).optional(),
-  tags: z.array(z.string()).optional(),
+  tags: z.array(z.string()),
   favorite: z.boolean().default(false),
   subjectId: z.string().min(1, "Le cours est requis"),
 });
