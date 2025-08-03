@@ -34,3 +34,10 @@ export const createSubjectSchema = z.object({
   notesIds: z.array(z.string()).optional(),
   assignmentIds: z.array(z.string()).optional(),
 });
+
+export const updateSubjectSchema = createSubjectSchema.extend({
+  id: z.string().min(1, "L'ID de la matière est requis"),
+});
+
+export type CreateSubject = z.infer<typeof createSubjectSchema>;
+export type UpdateSubject = z.infer<typeof updateSubjectSchema>;

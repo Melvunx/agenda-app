@@ -108,7 +108,7 @@ model Subject {
   updatedAt  DateTime @updatedAt
 
   assignments Assignment[]
-  notes       SubjectNote[]  
+  notes       Note[]  
   schedule    Schedule?    @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
 
   @@map("subject")
@@ -136,7 +136,7 @@ model Assignment {
   @@map("assignment")
 }
 
-model SubjectNote {
+model Note {
   id          String   @id @default(cuid())
   subjectId   String
   title       String
@@ -152,7 +152,7 @@ model SubjectNote {
 
   subject Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
 
-  @@map("subject_note")
+  @@map("note")
 }
 
 model Evenement {

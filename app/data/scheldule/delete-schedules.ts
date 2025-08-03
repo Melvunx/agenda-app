@@ -2,7 +2,7 @@
 
 import prisma from "@/src/lib/prisma";
 import {
-  DataRespoonse,
+  DataResponse,
   validateArrayString,
   validateString,
 } from "@/src/lib/utils";
@@ -11,7 +11,7 @@ import { requireUser } from "../user/require-user";
 
 export async function deleteSchedules(
   scheduleIds: string[]
-): Promise<DataRespoonse> {
+): Promise<DataResponse> {
   await requireUser();
 
   const ids = validateArrayString.safeParse(scheduleIds);
@@ -28,7 +28,7 @@ export async function deleteSchedules(
     return {
       success: false,
       error: "No schedule IDs provided",
-      message: "At least one schedule ID is required",
+      message: "Aucun ID de créneau fourni",
     };
   }
 
@@ -51,7 +51,7 @@ export async function deleteSchedules(
 
 export async function deleteSchedule(
   scheduleId: string
-): Promise<DataRespoonse> {
+): Promise<DataResponse> {
   await requireUser();
 
   const id = validateString.safeParse(scheduleId);
