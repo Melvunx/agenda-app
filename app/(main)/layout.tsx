@@ -1,7 +1,5 @@
 import { Footer } from "@/src/components/layout/Footer";
 import { Header } from "@/src/components/layout/Header";
-import { isAuthenticated } from "@/src/server/session";
-import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
 function LoadingScreen() {
@@ -12,26 +10,14 @@ function LoadingScreen() {
   );
 }
 
-async function AuthChecker({ children }: { children: React.ReactNode }) {
-  const authenticated = await isAuthenticated();
-
-  if (!authenticated) {
-    redirect("/signin");
-  }
-
-  return <>{children}</>;
-}
-
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <Suspense fallback={<LoadingScreen />}>
-      <AuthChecker>
-        <section>
-          <Header />
-          {children}
-          <Footer />
-        </section>
-      </AuthChecker>
+      <section>
+        <Header />
+        {children}
+        <Footer />
+      </section>
     </Suspense>
   );
 }

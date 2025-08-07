@@ -9,7 +9,9 @@ export default function Page() {
 
     if (auth === "logout") {
       toast.success("Vous êtes déconnecté avec succès");
-      // Nettoyer l'URL
+      window.history.replaceState({}, "", "/signin");
+    } else if (auth === "required") {
+      toast.error("Vous devez être connecté pour accéder à cette page");
       window.history.replaceState({}, "", "/signin");
     }
   }, []);

@@ -7,7 +7,7 @@ import "server-only";
 export const requireUser = cache(async (): Promise<User> => {
   const user = await getCurrentUser();
   if (!user) {
-    redirect("/signin");
+    redirect("/signin?auth=required");
   }
 
   return user;
