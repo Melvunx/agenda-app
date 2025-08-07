@@ -1,3 +1,5 @@
+"use client";
+
 import { FormSignin } from "@/src/components/layout/FormSignin";
 import { useEffect } from "react";
 import { toast } from "sonner";
@@ -17,7 +19,7 @@ export default function Page() {
   }, []);
 
   return (
-    <div>
+    <div className="flex items-center justify-center min-h-screen">
       <FormSignin />
     </div>
   );
