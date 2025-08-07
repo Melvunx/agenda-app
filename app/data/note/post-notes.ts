@@ -7,29 +7,38 @@ import { requireUser } from "../user/require-user";
 import { CreateNote, createNoteSchema } from "./schema/note";
 
 export async function createNote(data: CreateNote): Promise<DataResponse> {
-  await requireUser();
+  try {
+    await requireUser();
 
-  const note = createNoteSchema.safeParse(data);
+    const note = createNoteSchema.safeParse(data);
 
-  if (!note.success) {
+    if (!note.success) {
+      return {
+        success: false,
+        error: note.error.message,
+        message: "Note invalide",
+      };
+    }
+
+    await prisma.note.create({
+      data: {
+        ...note.data,
+      },
+    });
+
+    revalidatePath("/dashboard/note");
+
+    return {
+      success: true,
+      error: null,
+      message: "Note créée avec succès",
+    };
+  } catch (error) {
+    const e = error as Error;
     return {
       success: false,
-      error: note.error.message,
-      message: "Note invalide",
+      error: e.message,
+      message: "Une erreur s'est produite lors de la création de la note",
     };
   }
-
-  await prisma.note.create({
-    data: {
-      ...note.data,
-    },
-  });
-
-  revalidatePath("/dashboard/note");
-
-  return {
-    success: true,
-    error: null,
-    message: "Note créée avec succès",
-  };
 }

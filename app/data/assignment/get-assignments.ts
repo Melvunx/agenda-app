@@ -1,9 +1,11 @@
-import { AssignmentType } from "@/generated/prisma";
+import { Assignment, AssignmentType } from "@/generated/prisma";
 import prisma from "@/src/lib/prisma";
 import "server-only";
 import { requireUser } from "../user/require-user";
 
-export async function getAssignments(assignType?: AssignmentType) {
+export async function getAssignments(
+  assignType?: AssignmentType
+): Promise<Assignment[]> {
   await requireUser();
 
   if (assignType && Object.values(AssignmentType).includes(assignType)) {
@@ -26,6 +28,6 @@ export async function getAssignments(assignType?: AssignmentType) {
       dueDate: "desc",
     },
   });
-  
+
   return assignments;
 }

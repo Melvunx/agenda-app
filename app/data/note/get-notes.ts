@@ -1,8 +1,9 @@
+import { Note } from "@/generated/prisma";
 import prisma from "@/src/lib/prisma";
 import "server-only";
 import { requireUser } from "../user/require-user";
 
-export async function getNotes(tag?: string) {
+export async function getNotes(tag?: string): Promise<Note[]> {
   await requireUser();
 
   if (tag) {

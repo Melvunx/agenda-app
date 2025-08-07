@@ -7,30 +7,39 @@ import { requireUser } from "../user/require-user";
 import { UpdateNote, updateNoteSchema } from "./schema/note";
 
 export async function updateNote(data: UpdateNote): Promise<DataResponse> {
-  await requireUser();
+  try {
+    await requireUser();
 
-  const note = updateNoteSchema.safeParse(data);
+    const note = updateNoteSchema.safeParse(data);
 
-  if (!note.success) {
+    if (!note.success) {
+      return {
+        success: false,
+        error: note.error.message,
+        message: "Note invalide",
+      };
+    }
+
+    await prisma.note.update({
+      where: { id: data.id },
+      data: {
+        ...note.data,
+      },
+    });
+
+    revalidatePath("/dashboard/note");
+
+    return {
+      success: true,
+      error: null,
+      message: "Note mise à jour avec succès",
+    };
+  } catch (error) {
+    const e = error as Error;
     return {
       success: false,
-      error: note.error.message,
-      message: "Note invalide",
+      error: e.message,
+      message: "Une erreur s'est produite lors de la mise à jour de la note",
     };
   }
-
-  await prisma.note.update({
-    where: { id: data.id },
-    data: {
-      ...note.data,
-    },
-  });
-
-  revalidatePath("/dashboard/note");
-
-  return {
-    success: true,
-    error: null,
-    message: "Note mise à jour avec succès",
-  };
 }

@@ -9,30 +9,39 @@ import { createScheduleSchema, UpdateSchedule } from "./schema/schedule";
 export async function updateSchedule(
   data: UpdateSchedule
 ): Promise<DataResponse> {
-  await requireUser();
+  try {
+    await requireUser();
 
-  const schedule = createScheduleSchema.safeParse(data);
+    const schedule = createScheduleSchema.safeParse(data);
 
-  if (!schedule.success) {
+    if (!schedule.success) {
+      return {
+        success: false,
+        error: schedule.error.message,
+        message: "Erreur lors de la mise à jour du créneau",
+      };
+    }
+
+    await prisma.schedule.update({
+      where: { id: data.id },
+      data: {
+        ...schedule.data,
+      },
+    });
+
+    revalidatePath("/dashboard/schedule");
+
+    return {
+      success: true,
+      error: null,
+      message: "Créneau mis à jour avec succès",
+    };
+  } catch (error) {
+    const e = error as Error;
     return {
       success: false,
-      error: schedule.error.message,
+      error: e.message,
       message: "Erreur lors de la mise à jour du créneau",
     };
   }
-
-  await prisma.schedule.update({
-    where: { id: data.id },
-    data: {
-      ...schedule.data,
-    },
-  });
-
-  revalidatePath("/dashboard/schedule");
-
-  return {
-    success: true,
-    error: null,
-    message: "Créneau mis à jour avec succès",
-  };
 }

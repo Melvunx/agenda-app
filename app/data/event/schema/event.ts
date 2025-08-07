@@ -26,3 +26,10 @@ export const createEvenementSchema = z.object({
     .max(20, "L'heure de fin doit être au maximum 20h")
     .nullable(),
 });
+
+export const updateEvenementSchema = createEvenementSchema.extend({
+  id: z.string().min(1, "L'ID de l'événement est requis"),
+});
+
+export type CreateEvent = z.infer<typeof createEvenementSchema>;
+export type UpdateEvent = z.infer<typeof updateEvenementSchema>;

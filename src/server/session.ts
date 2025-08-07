@@ -1,11 +1,12 @@
 "use server";
 
+import { User } from "better-auth";
 import { headers } from "next/headers";
 import { auth } from "../lib/auth";
 
 export type SessionResponse = {
   authenticated: boolean;
-  user: Record<string, unknown> | null;
+  user: User | null;
   message: string;
 };
 
@@ -45,7 +46,7 @@ export async function getUserSession(): Promise<SessionResponse> {
 //   return session.authenticated;
 // }
 
-export async function getCurrentUser() {
+export async function getCurrentUser(): Promise<User | null> {
   const session = await getUserSession();
   return session.authenticated ? session.user : null;
 }
