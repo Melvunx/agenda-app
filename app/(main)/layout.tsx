@@ -1,5 +1,5 @@
-import { Footer } from "@/src/components/layout/footer";
-import { Header } from "@/src/components/layout/header";
+import { Footer } from "@/src/components/layout/Footer";
+import { Header } from "@/src/components/layout/Header";
 import { isAuthenticated } from "@/src/server/session";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";

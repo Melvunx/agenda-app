@@ -1,5 +1,11 @@
 "use client";
 
+import { Navbar } from "../Navbar";
+
 export function Header() {
-  return <div></div>;
+  return (
+    <div>
+      <Navbar />
+    </div>
+  );
 }
